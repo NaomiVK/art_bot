@@ -10,15 +10,15 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
     raise RuntimeError("DISCORD_TOKEN is not set. Provide it via environment variable.")
 
+# Optional: during development, restrict /command registration to certain guilds for instant updates
+_guild_ids_env = os.getenv("GUILD_IDS", "").strip()
+GUILD_IDS = [int(x) for x in _guild_ids_env.split(",") if x.strip().isdigit()]
+
 # Intents: for slash-commands we don't need message content
 intents = discord.Intents.default()
 
 # Use commands.Bot. We'll register slash cmds via cogs.
-bot = commands.Bot(intents=intents, command_prefix="!")
-
-# Optional: during development, restrict /command registration to certain guilds for instant updates
-_guild_ids_env = os.getenv("GUILD_IDS", "").strip()
-GUILD_IDS = [int(x) for x in _guild_ids_env.split(",") if x.strip().isdigit()]
+bot = commands.Bot(intents=intents, command_prefix="!", debug_guilds=GUILD_IDS if GUILD_IDS else None)
 
 @bot.event
 async def on_ready():
